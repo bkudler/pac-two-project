@@ -20,7 +20,6 @@ char * preProcess(char *src, char *dest)
 	int lastPos = strlen(src);
 	int i = strlen(src) - 1;
 
-	// printf("%d %s\n", lastPos, src);
 
 	while(i > 0 && isspace(src[i]))
 	{	
@@ -28,79 +27,99 @@ char * preProcess(char *src, char *dest)
 		i--;
 	}
 
-	// printf("%d %s\n", lastPos, src);
-	// printf("%d\n", sizeof(dest));
 
 
 	char currChar;
 
 	for(int i = 0; i < lastPos; i++){
-		// printf("%d %d\n", i,lastPos);
 		if(!isspace(src[i]) || !isspace(src[lastAddedPos])){
 			currChar = src[i];
-			// printf("%c %s\n", currChar, dest);
 			if(isspace(currChar)){
-				// dest[i] = " ";
 				currChar = ' ';
 			} else if(isalpha(src[i])){
-				// dest[i] = tolower(src[i]);
 				currChar = tolower(currChar);
 			}
-
-			// strcat( dest, currChar);
-			// printf("HEY %d \n", i);
-			// printf("HEY %d %c\n", i, currChar);
-
 			dest[i] = currChar;
 		}
 	}
-
-	// printf("%s\n", src);
 
 
 	return dest;
 }
 
 
-// int count(char *searchStr, char *compareStr)
-// {
+int count(char *searchStr, char *compareStr, int k)
+{
 
-// 	int ctr = 0;
-// 	char *searchSubStr = malloc(1 + k);
-// 	char *foundSubStr = malloc(1 + k);
-// 	for(int i = 0; i <= (strlen(fileOneCleanString) - k), i++){
-// 		searchSubStr = memcpy(searchSubStr, &fileOneCleanString[i], k );
-// 		for(int j = 0; j <= (strlen(fileTwoCleanString) - k), j++){
-// 			foundSubStr = memcpy(searchSubStr, &fileOneCleanString[i], k );
-// 			if(searchSubStr == foundSubStr){
-// 				ctr++;
-// 			}
-// 		}
-// 	}
+	int ctr = 0;
+	// char *searchSubStr = malloc(1 + k);
+	// char *foundSubStr = malloc(1 + k);
+	// char *searchSubStr = malloc(k);
+	// char *foundSubStr = malloc(k);
 
-// 	free(searchSubStr);
-// 	free(searchSubStr);
-// 	return ctr;
+	char *searchSubStr = calloc(k, sizeof(char));
+	char *foundSubStr = calloc(k, sizeof(char));
 
-// }
+	if(searchSubStr == NULL || foundSubStr == NULL){
+		printf("can’t allocate enough memory: %m\n");
+		return -1;
+	}
+
+	// printf("%s %s\n", searchStr, compareStr);
+
+	for(int i = 0; i <= (strlen(searchStr) - k); i++){
+
+		searchSubStr = memcpy(searchSubStr, &searchStr[i], k );
+
+		// printf("%s %s\n", searchSubStr, "HERE");
+
+		for(int j = 0; j <= (strlen(compareStr) - k); j++){
+
+			foundSubStr = memcpy(foundSubStr, &compareStr[j], k );
+
+			// printf("%s       %s\n", searchSubStr, foundSubStr);
+
+			if(strcmp(searchSubStr, foundSubStr) == 0){
+				ctr++;
+				// printf("%d", ctr);
+				printf("%s       %s\n", searchSubStr, foundSubStr);
+
+				break;
+			}
+		}
+	}
+
+	free(searchSubStr);
+	free(foundSubStr);
+
+	return ctr;
+
+}
 
  
 int main(int argc, char *argv[])
 {
 	int k = atoi(argv[1]);
 	char *fileNameOne = argv[2];
-	int fileOneSize = atoi(argv[3]);
+	double fileOneSize = atoi(argv[3]);
 	char *fileNameTwo = argv[4];
 	int fileTwoSize = atoi(argv[5]);
-	char *fileOneString = malloc(1 + fileOneSize);
-	char *fileTwoString = malloc(1 + fileTwoSize);
+	// char *fileOneString = malloc(1 + fileOneSize);
+	// char *fileTwoString = malloc(1 + fileTwoSize);
+	char *fileOneString = calloc(1 + fileOneSize, sizeof(char));
+	char *fileTwoString = calloc(1 + fileTwoSize, sizeof(char));
 	FILE *fptr1;
 	FILE *fptr2;
+
+	if(fileOneString == NULL || fileTwoString == NULL){
+		printf("can’t allocate enough memory: %m\n");
+		return -1;
+	}
 
 	fptr1 = fopen(fileNameOne, "r");
 
 	if(fptr1 == NULL){
-		printf("Could not open %s\n", fileNameOne);
+		printf("cannot read file");
 		return -1;
 	}
 	
@@ -108,14 +127,18 @@ int main(int argc, char *argv[])
 	// if(fgets(fileOneString, fileOneSize + 1, fptr1) != NULL){}
 
 
-	for(int i = 0; i < (fileOneSize + 1); i++){
-		fileOneString[i] = '\0';
-	}
+	// for(int i = 0; i < (fileOneSize + 1); i++){
+	// 	fileOneString[i] = '\0';
+	// }
+
 
 	while( fscanf(fptr1, "%s", &fileOneString[strlen(fileOneString)] ) == 1){
 		// printf("%d %s\n", strlen(fileOneString), fileOneString);
 		fileOneString[strlen(fileOneString)] = ' ';
 	}
+
+	// printf("HI %s\n", fileOneString);
+
 
 	fclose(fptr1);
 
@@ -129,37 +152,63 @@ int main(int argc, char *argv[])
 
 	// if(fgets(fileTwoString, fileTwoSize + 1, fptr2) != NULL){}
 
-	for(int i = 0; i < (fileTwoSize + 1); i++){
-		fileTwoString[i] = '\0';
-	}
+	// for(int i = 0; i < (fileTwoSize + 1); i++){
+	// 	fileTwoString[i] = '\0';
+	// }
 
 	while( fscanf(fptr2, "%s", &fileTwoString[strlen(fileTwoString)] ) == 1){
 		// printf("%d %s\n", strlen(fileTwoString), fileTwoString);
 		fileTwoString[strlen(fileTwoString)] = ' ';
 	}
 
+	// printf("HELLOooBEN.   %s\n", fileTwoString);
+
+
 	fclose(fptr2);	
 
 	// printf("%s\n%s\n", fileOneString, fileTwoString);
 
-	char *fileOneCleanString = malloc(1 + fileOneSize);
+	char *fileOneCleanString = calloc(1 + fileOneSize, sizeof(char));
+
+	if(fileOneCleanString == NULL){
+		printf("can’t allocate enough memory: %m\n");
+		return -1;
+	}
+
 	fileOneCleanString = preProcess(fileOneString, fileOneCleanString);
 
+	free(fileOneString);
 
-	char *fileTwoCleanString = malloc(1 + fileOneSize);
+	char *fileTwoCleanString = calloc(1 + fileTwoSize, sizeof(char));
+
+	if(fileTwoCleanString == NULL){
+		printf("can’t allocate enough memory: %m\n");
+		return -1;
+	}
+
 	fileTwoCleanString = preProcess(fileTwoString, fileTwoCleanString);
 
-	// int ctr;
-	// ctr = count(fileOneCleanString, fileTwoCleanString);
+	// printf("THIS IS WHERE %s\n", fileTwoCleanString);
 
-	printf("%s\n%s\n", fileOneCleanString, fileTwoCleanString);
-
-
-
-	free(fileOneString);
 	free(fileTwoString);
+
+	int ctr;
+	// printf("%s\n%s\n%d\n", fileOneCleanString, fileTwoCleanString, ctr);
+
+	ctr = count(fileOneCleanString, fileTwoCleanString,k);
+
+	printf("%s\n%s\n%d\n", fileOneCleanString, fileTwoCleanString, ctr);
 
 	free(fileOneCleanString);
 	free(fileTwoCleanString);
+
+	double similarity = ctr / ( (fileOneSize - k) + 1);
+
+	printf("%lf\n", similarity);
+
+
+
+	return similarity;
+
 
 }
