@@ -199,10 +199,14 @@ int main(int argc, char *argv[])
 
 	printf("%s\n%s\n%d\n", fileOneCleanString, fileTwoCleanString, ctr);
 
+	double fileOneStringLength = strlen(fileOneCleanString);
+
+
 	free(fileOneCleanString);
 	free(fileTwoCleanString);
 
-	double similarity = ctr / ( (fileOneSize - k) + 1);
+
+	double similarity = ctr / ( (fileOneStringLength - k) + 1);
 
 	printf("%lf\n", similarity);
 
